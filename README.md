@@ -13,4 +13,5 @@ A web scraper for chuncheon bus timetable.
 
 This highly not compatible and unstable scraper is only scraping the chuncheon bus timetable site. 
 But the elementary library files doing scraping or string handling, etc, in 'lib' package are applicable in such many my personal python projects. 
-efef
+
+![GitHub last commit](https://img.shields.io/github/last-commit/altair823/ChuncheonBus)
