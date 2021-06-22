@@ -1,9 +1,8 @@
 
 import requests.exceptions
 
-import lib.string_extractor
-from lib import scraper
-from lib import string_extractor
+from lib import scraper, string_extractor
+from bus import Bus
 
 
 class CCBusScraper:
@@ -15,25 +14,33 @@ class CCBusScraper:
         except requests.exceptions.InvalidURL:
             print("Invalid URL Exception! Abort program. ")
             exit(1)
-        self.header = _scraper.get_header()
-        self.html_string = _scraper.get_html_string()
+        else:
+            self.header = _scraper.get_header()
+            self.html_string = _scraper.get_html_string()
 
-        # the set of bus timetables.
-        self.bus_list = set()
-
-    def get_total_string(self):
-        return self.html_string
-
-    def _find_buses_from_html(self):
-        _string_extractor = lib.string_extractor.get_extractor(self.html_string)
-        _string_extractor.set_start_target("<TD>")
-        _string_extractor.set_end_target("</TD>")
-        return _string_extractor.find_string()
+        # the set of bus timetable data.
+        self.bus_list = {}
 
     def find_buses(self):
-        self.bus_list = self._find_buses_from_html()
-        for i in self.bus_list:
-            print(self.html_string[i[0]:i[1]])
+        _string_extractor = string_extractor.StringExtractor(self.html_string)
+        td_tagged = _string_extractor.find_tag_strings('td')
+        td_tagged_list = []
+        for i in td_tagged:
+            td_tagged_list.append(i.string)
+
+        #100
+        a_bus = Bus(td_tagged_list[0], td_tagged_list[1], td_tagged_list[2])
+        self.bus_list["100"] = a_bus
+
+        #100-1
+        a_bus = Bus(td_tagged_list[3], td_tagged_list[4], td_tagged_list[5])
+        self.bus_list["100-1"] = a_bus
+
+        #200
+        a_bus = Bus(td_tagged_list[6], td_tagged_list[7], td_tagged_list[8])
+        self.bus_list["200"] = a_bus
+        print(self.bus_list["200"])
+        #print(self.bus_list["200"])
 
 
 a = CCBusScraper("http://www.chuncheon-pti.kr/index.php?mp=p2_4_1")

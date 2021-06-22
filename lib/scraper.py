@@ -10,8 +10,8 @@ class Scraper:
         self.url = url_string
 
         try:
-            # URL connection
-            self.conn = requests.get(self.url)
+            # URL connection.
+            self.conn = requests.get(self.url, verify=False, timeout=10)
             if self.conn.status_code != 200:
                 raise requests.exceptions.ConnectionError
         except requests.exceptions.ConnectionError:
