@@ -4,10 +4,7 @@ import requests
 # Web scraper class that scraping the html string from given URL.
 class Scraper:
 
-    def __init__(self, url_string):
-
-        if url_string == "":
-            raise #raise exception
+    def __init__(self, url_string=None):
 
         # URL for scraping information.
         self.url = url_string
@@ -15,19 +12,21 @@ class Scraper:
         try:
             # URL connection
             self.conn = requests.get(self.url)
-        except AttributeError:
+            if self.conn.status_code != 200:
+                raise requests.exceptions.ConnectionError
+        except requests.exceptions.ConnectionError:
             print("There is no connection for url. Cannot retrieve the html string.")
+            self.conn = None
+        except requests.exceptions.MissingSchema:
+            print("Invalid URL! Please check URL string")
             self.conn = None
 
         # html string that contains information.
-        self.htmlString = self.conn.text
-
-    # Get the http(https) connection from given url string.
-    def _get_connection(self):
         try:
-            return requests.get(self.url)
-        except requests.exceptions.ConnectionError:
-            print("There is no page in " + self.url)
+            self.htmlString = self.conn.text
+        except AttributeError:
+            print("Cannot retrieve html string from URL!")
+            raise requests.exceptions.InvalidURL
 
     # Get the html string of connected url page and return it.
     # If there is no connection for url, print message and return None.
@@ -37,6 +36,7 @@ class Scraper:
     # Get response header.
     def get_header(self):
         return self.conn.headers
+
 
 if __name__ == "__main__":
     print("This is not a valid executable.")
