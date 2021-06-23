@@ -1,7 +1,6 @@
-
 import requests.exceptions
-
-from lib import scraper, string_extractor
+from lib import scraper, gui
+from bs4 import BeautifulSoup
 from bus import Bus
 
 
@@ -19,31 +18,43 @@ class CCBusScraper:
             self.html_string = _scraper.get_html_string()
 
         # the set of bus timetable data.
-        self.bus_list = {}
+        self.bus_dict = {}
 
-    def find_buses(self):
-        _string_extractor = string_extractor.StringExtractor(self.html_string)
-        td_tagged = _string_extractor.find_tag_strings('td')
-        td_tagged_list = []
-        for i in td_tagged:
-            td_tagged_list.append(i.string)
+    def read_timetable(self):
+        # Make soup
+        soup = BeautifulSoup(self.html_string, "lxml")
+        # All bus timetable information are located between <td> tags.
+        td = soup.find_all('td')
+        # Between time of the bus that departing different stations,
+        # there is string which contain departure station name.
+        # But it is covered with <span> tags and needs to be uncovered(unwrap).
+        for departure in soup.findAll('span'):
+            departure.unwrap()
 
-        #100
-        a_bus = Bus(td_tagged_list[0], td_tagged_list[1], td_tagged_list[2])
-        self.bus_list["100"] = a_bus
+        # Store all read timetable data in bus_list in way of Bus class.
+        for i in range(0, len(td), 3):
+            self.bus_dict[td[i].text] = Bus(td[i].text, td[i + 1].text, td[i + 2].text)
 
-        #100-1
-        a_bus = Bus(td_tagged_list[3], td_tagged_list[4], td_tagged_list[5])
-        self.bus_list["100-1"] = a_bus
+    def get_bus(self):
+        while True:
+            bus_number = input("Please input bus number >> ")
+            try:
+                wanted_bus = self.bus_dict[bus_number]
+            except KeyError:
+                print("There is no such bus!")
+                print("Check bus number again")
+            else:
+                return wanted_bus
 
-        #200
-        a_bus = Bus(td_tagged_list[6], td_tagged_list[7], td_tagged_list[8])
-        self.bus_list["200"] = a_bus
-        print(self.bus_list["200"])
-        #print(self.bus_list["200"])
+    def make_gui(self):
+        g = gui.Gui()
+        for bus in self.bus_dict:
+            g.make_bus_button(self.bus_dict[bus])
+        g.show_bus_info(self.bus_dict["100"])
+        g.execute()
+
 
 
 a = CCBusScraper("http://www.chuncheon-pti.kr/index.php?mp=p2_4_1")
-#print(a.get_total_string())
-#print(a.find_buses())
-a.find_buses()
+a.read_timetable()
+a.make_gui()
