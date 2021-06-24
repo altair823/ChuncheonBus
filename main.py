@@ -1,4 +1,4 @@
-# version 0.1
+# version 0.2
 
 import sys
 
@@ -6,7 +6,7 @@ import requests.exceptions
 from PyQt5.QtWidgets import QApplication
 
 from lib import scraper
-from lib.gui import BusGUI
+from gui import BusGUI
 from bs4 import BeautifulSoup
 from bus import Bus
 
