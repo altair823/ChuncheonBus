@@ -1,7 +1,7 @@
 # Web Scraper for ChunCheon Bus Timetable
 
-![Version](https://img.shields.io/github/languages/code-size/altair823/ChuncheonBus)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/altair823/ChuncheonBus)]()
+[![Version](https://img.shields.io/github/languages/code-size/altair823/ChuncheonBus)](https://github.com/altair823/ChuncheonBus/releases/tag/0.2)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/altair823/ChuncheonBus)](https://github.com/altair823/ChuncheonBus/releases/tag/0.2)
 
 A web scraper for chuncheon bus timetable.
 
