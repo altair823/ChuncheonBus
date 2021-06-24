@@ -1,33 +1,44 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QLabel, QHBoxLayout, QVBoxLayout
-from bus import Bus
+import sys
+from PyQt5.QtWidgets import *
+from PyQt5 import uic
 
+#UI파일 연결
+#단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.
+form_class = uic.loadUiType("lib/bus_gui.ui")[0]
 
-class Gui:
-    def __init__(self):
-        self.app = QApplication([])
-        self.window = QWidget()
-        self.all = QVBoxLayout()
-        self.buttons_layout = QHBoxLayout()
-        self.info_layout = QHBoxLayout()
-        self.button_row = 1
+#화면을 띄우는데 사용되는 Class 선언
+class BusGUI(QMainWindow, form_class) :
+    def __init__(self, bus_dict) :
+        super().__init__()
+        self.setupUi(self)
 
-    def make_bus_button(self, a_bus):
-        if type(a_bus) != Bus:
-            raise AttributeError("Not Bus Class!")
-        btn = QPushButton(a_bus.number)
-        btn.setCheckable(False)
-        self.buttons_layout.addWidget(btn)
-        self.button_row += 1
+        self.bus_dict = bus_dict
 
-    def show_bus_info(self, a_bus):
-        route_label = QLabel(a_bus.route)
-        timetable_label = QLabel(a_bus.timetable)
-        self.info_layout.addWidget(route_label, 2)
-        self.info_layout.addWidget(timetable_label, 3)
+        self.bus_list.currentIndexChanged.connect(self.print_route)
+        self.bus_list.currentIndexChanged.connect(self.print_timetable)
 
-    def execute(self):
-        self.window.setLayout(self.buttons_layout)
-        self.window.setLayout(self.info_layout)
-        self.window.show()
-        self.app.exec()
+    def add_a_bus(self, a_bus):
+        self.bus_list.addItem(a_bus)
 
+    def add_bus_all(self):
+        for bus_key in self.bus_dict.keys():
+            self.add_a_bus(bus_key)
+
+    def print_route(self):
+        self.bus_route_label.setText(self.bus_dict[self.bus_list.currentText()].route)
+
+    def print_timetable(self):
+        self.bus_timetable_label.setText(self.bus_dict[self.bus_list.currentText()].timetable)
+
+if __name__ == "__main__" :
+    #QApplication : 프로그램을 실행시켜주는 클래스
+    app = QApplication(sys.argv)
+
+    #WindowClass의 인스턴스 생성
+    myWindow = BusGUI()
+
+    #프로그램 화면을 보여주는 코드
+    myWindow.show()
+
+    #프로그램을 이벤트루프로 진입시키는(프로그램을 작동시키는) 코드
+    app.exec_()

@@ -1,5 +1,12 @@
+# version 0.1
+
+import sys
+
 import requests.exceptions
-from lib import scraper, gui
+from PyQt5.QtWidgets import QApplication
+
+from lib import scraper
+from lib.gui import BusGUI
 from bs4 import BeautifulSoup
 from bus import Bus
 
@@ -46,15 +53,21 @@ class CCBusScraper:
             else:
                 return wanted_bus
 
-    def make_gui(self):
-        g = gui.Gui()
-        for bus in self.bus_dict:
-            g.make_bus_button(self.bus_dict[bus])
-        g.show_bus_info(self.bus_dict["100"])
-        g.execute()
-
 
 
 a = CCBusScraper("http://www.chuncheon-pti.kr/index.php?mp=p2_4_1")
 a.read_timetable()
-a.make_gui()
+
+# QApplication : 프로그램을 실행시켜주는 클래스
+app = QApplication(sys.argv)
+
+# WindowClass의 인스턴스 생성
+myWindow = BusGUI(a.bus_dict)
+
+myWindow.add_bus_all()
+
+# 프로그램 화면을 보여주는 코드
+myWindow.show()
+
+# 프로그램을 이벤트루프로 진입시키는(프로그램을 작동시키는) 코드
+app.exec_()
